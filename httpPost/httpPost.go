@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -92,10 +93,60 @@ func jsonDataPost() {
 	fmt.Println(string(resqBody))
 }
 
+//xmlDataPost : xml data post
+func xmlDataPost() {
+	person := Person{"Bibiane", 27}
+	pbytes, _ := xml.Marshal(person)
+	buff := bytes.NewBuffer(pbytes)
+	resp, err := http.Post("http://httpbin.org/post", "application/xml", buff)
+
+	// Response 체크
+	resqBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(string(resqBody))
+}
+
+// useHardControlPost func
+func useHardControlPost() {
+	person := Person{"soyoung", 27}
+	pbytes, _ := xml.Marshal(person) // struct to byte arrays
+	buff := bytes.NewBuffer(pbytes)
+
+	// Request 객체 생성
+	req, err := http.NewRequest("POST", "http://httpbin.org/post", buff)
+	if err != nil {
+		panic(err)
+	}
+
+	// Content-Type 헤더 추가
+	req.Header.Add("Content-Type", "application/xml")
+
+	// Client 객체에서 Requests 실행
+	client := http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+
+	defer resp.Body.Close()
+
+	// Response 체크
+	resqBody, err := ioutil.ReadAll(resp.Body)
+	if err == nil {
+		str := string(resqBody)
+		fmt.Println(str)
+	}
+}
+
 func main() {
 	// http 패키지는 웹 관련 클라이언트 및 서버 기능을 제공
 	// http.Post() 메서드는 웹서버로 간단히 데이터를 POST 하는데 사용
 	simplePost()
 	formValuePost()
 	jsonDataPost()
+	xmlDataPost()
+	useHardControlPost()
 }
