@@ -1,0 +1,3 @@
+End of multiLogger Program
+multiLogger run func
+End of multiLogger Program
